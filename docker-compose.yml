@@ -1,15 +1,15 @@
 version: "3"
 services:
-  flask: 
+  dl_spot: 
     build: .
     ports: 
       - 5001:5000
     networks:
-      flask:
+      dl_spot_net:
         ipv4_address: 172.19.0.44
 
 networks:
-  flask:
+  dl_spot_net:
     driver: bridge
     ipam:
       driver: default
