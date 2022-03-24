@@ -1,0 +1,17 @@
+version: "3"
+services:
+  flask: 
+    build: .
+    ports: 
+      - 5001:5000
+    networks:
+      flask:
+        ipv4_address: 172.19.0.44
+
+networks:
+  flask:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/24
