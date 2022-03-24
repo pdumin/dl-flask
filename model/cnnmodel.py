@@ -1,10 +1,18 @@
 import torch
 import json
 import torchvision
+from PIL import Image
+import numpy as np
 
 # читаем изображение
 def read_and_preprocess(path: str):
-    img = torchvision.io.read_image(path) / 255.
+    # img = torchvision.io.read_image(path) / 255.
+    # Read image
+    img = torch.permute(torch.Tensor(np.array(Image.open(path))) /255., (2, 0, 1))
+    print(img.shape)
+
+    
+    # print(type(img))
     resize = torchvision.transforms.Resize((227, 227))
     img = resize(img)
     # print(img)
@@ -28,7 +36,7 @@ def predict(model, filepath):
     img = read_and_preprocess(filepath)
     classes = load_classes()
     img = read_and_preprocess(filepath)
-    print(img.shape)
+    # print(img.shape)
     pred = get_predictions(model, img, classes)
     return pred
     
