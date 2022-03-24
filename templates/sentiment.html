@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+{% if query %}
+<center>
+<form action = "/analyzer" method = "POST">
+         <textarea type = "text" name = "sentiment" rows="3" cols="50" padding="10px"> </textarea></br>
+         <input type = "submit" name="analyze" value="Analyze!"/>
+</form>  
+</center>
+
+{% endif %}
+
+{% if result %}
+<br>
+<br>
+<br>
+<p>Фраза  "{{ text }}" выглядит {{ result }}</p>
+
+{% endif %}
+
+{%endblock%}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{%block content%}
+{% if alert%}
+    {{alert}}
+{%endif%}
+<form action = "/uploader" method = "POST" 
+         enctype = "multipart/form-data">
+         <input type = "file" name = "file" />
+         <input type = "submit" name="Upload" />
+</form>  
+
+{% if img%}
+    <center>
+        <figure>
+            <img src="{{ img }}" width="400" height="300">
+            {% if label %}
+                <figcaption>{{ label }}</figcaption>
+            {% endif %}
+        </figure>
+    </center>
+{%endif%}
+
+{%endblock%}
