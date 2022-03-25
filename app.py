@@ -6,6 +6,7 @@ from flask import send_from_directory
 from model.cnnmodel import predict
 from model.model_init import load_cnn_model, load_text_model
 from model.textmodel import get_sentiment
+import threading
 
 UPLOAD_FOLDER = 'static/files/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'csv', 'pdf'}
@@ -14,16 +15,20 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_PATH'] = 2**16
 
-global cnn_model, text_model, tokenizer
-cnn_model = load_cnn_model()
-text_model, tokenizer = load_text_model()
-
 global sent
 sent = {
     'positive' : 'позитивной',
     'negative' : 'негативной',
     'neutral'  : 'нейтральной'
 }
+
+@app.before_first_request
+def init_models():
+    global cnn_model, text_model, tokenizer
+    cnn_model = load_cnn_model()
+    text_model, tokenizer = load_text_model()
+    thread = threading.Thread(target=init_models)
+    thread.start()
 
 def allowed_file(filename):
     return '.' in filename and \
