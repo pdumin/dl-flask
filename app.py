@@ -1,6 +1,6 @@
 from json import load
 import os
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, flash, url_for
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from model.cnnmodel import predict
@@ -9,11 +9,12 @@ from model.textmodel import get_sentiment
 import threading
 
 UPLOAD_FOLDER = 'static/files/'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'csv', 'pdf'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_PATH'] = 2**16
+app.secret_key = b'0000'
 
 global sent
 sent = {
@@ -54,17 +55,16 @@ def upload_file():
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
-            
             prediction = predict(cnn_model, filepath)
         else:
-            return render_template('image.html', alert='Choose correct file!')
+            flash('Choose correct file!')
+            return redirect(url_for('image'))
     return render_template('image.html', img=filepath, label=prediction)
 
 @app.route('/analyzer', methods=['POST'])
 def sent_analysis():
     if request.method == 'POST':
         text = request.form['sentiment']
-        
         inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True)
         result = get_sentiment(text_model, inputs)
         # print(result)
