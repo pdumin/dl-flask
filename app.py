@@ -2,11 +2,10 @@ from json import load
 import os
 from flask import Flask, redirect, render_template, request, flash, url_for
 from werkzeug.utils import secure_filename
-from flask import send_from_directory
 from model.cnnmodel import predict
 from model.model_init import load_cnn_model, load_text_model
 from model.textmodel import get_sentiment
-import threading
+import concurrent
 
 UPLOAD_FOLDER = 'static/files/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -23,13 +22,28 @@ sent = {
     'neutral'  : 'нейтральной'
 }
 
+# @app.before_first_request
+# def init_models():
+#     global cnn_model, text_model, tokenizer
+#     cnn_model = load_cnn_model()
+#     text_model, tokenizer = load_text_model()
+#     thread = threading.Thread(target=init_models)
+#     thread.start()
+
 @app.before_first_request
 def init_models():
-    global cnn_model, text_model, tokenizer
-    cnn_model = load_cnn_model()
-    text_model, tokenizer = load_text_model()
-    thread = threading.Thread(target=init_models)
-    thread.start()
+    # задаем глобальные переменные, в которые запишем модели
+    global cnn_model, text_model, tokenizer, text_generator_model, text_generator_tokenizer
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        # создаем несколько потоков
+        cnn_future = executor.submit(load_cnn_model)
+        text_model_future = executor.submit(load_text_model)
+        
+        # забираем результат из каждого потока 
+        cnn_model = cnn_future.result()
+        text_model, tokenizer = text_model_future.result()
+
 
 def allowed_file(filename):
     return '.' in filename and \
