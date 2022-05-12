@@ -61,6 +61,10 @@ def image():
 def sentiment():
     return render_template('sentiment.html', query=True)
 
+@app.route('/task')
+def task():
+    return render_template('task.html')
+
 @app.route('/uploader', methods = ['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
