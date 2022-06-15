@@ -10,7 +10,7 @@ import concurrent
 UPLOAD_FOLDER = 'static/files/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-app = Flask(__name__)
+app = Flask(__name__)    
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_PATH'] = 2**16
 app.secret_key = b'0000'
@@ -74,7 +74,7 @@ def upload_file():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             prediction = predict(cnn_model, filepath)
-        else:
+        else: 
             flash('Choose correct file!')
             return redirect(url_for('image'))
     return render_template('image.html', img=filepath, label=prediction)
